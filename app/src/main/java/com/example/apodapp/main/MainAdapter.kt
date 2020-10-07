@@ -8,9 +8,15 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.apodapp.R
 import kotlinx.android.synthetic.main.item_list.view.*
 
+interface ItemListInteractorListener {
+    fun itemClicked()
+}
 
-
-class MainAdapter(private val context: Context, private val items: ArrayList<String>): RecyclerView.Adapter<MainAdapter.ApodHolder>() {
+class MainAdapter(
+    private val context: Context,
+    private val items: ArrayList<String>,
+    private val listener: ItemListInteractorListener
+) : RecyclerView.Adapter<MainAdapter.ApodHolder>() {
 
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ApodHolder {
@@ -20,17 +26,21 @@ class MainAdapter(private val context: Context, private val items: ArrayList<Str
 
     override fun onBindViewHolder(holder: ApodHolder, position: Int) {
         holder.title = items[position]
+
+        holder.itemView.setOnClickListener {
+            listener.itemClicked()
+        }
     }
 
     override fun getItemCount(): Int {
         return items.size
     }
 
-    inner class ApodHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
+    inner class ApodHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         var title: String? = null
         set(value) {
             field = value
-            itemView.cardTextView.text = field
+
         }
     }
 }
