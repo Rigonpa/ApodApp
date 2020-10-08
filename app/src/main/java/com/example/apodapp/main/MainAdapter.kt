@@ -25,7 +25,7 @@ class MainAdapter(
     }
 
     override fun onBindViewHolder(holder: ApodHolder, position: Int) {
-        holder.title = items[position]
+        holder.view
 
         holder.itemView.setOnClickListener {
             listener.itemClicked()
@@ -37,10 +37,6 @@ class MainAdapter(
     }
 
     inner class ApodHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        var title: String? = null
-        set(value) {
-            field = value
-
-        }
+        internal var view = itemView
     }
 }
