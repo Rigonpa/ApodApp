@@ -72,6 +72,7 @@ class DetailActivity : AppCompatActivity() {
 
         detailSaveApod.setOnClickListener {
             mViewModel.insertApod(mApodResponse!!)
+            finish()
         }
     }
 }

@@ -7,6 +7,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.apodapp.R
@@ -18,7 +19,7 @@ import kotlinx.android.synthetic.main.fragment_main.*
 /**
  * A simple [Fragment] subclass as the default destination in the navigation.
  */
-class MainFragment : Fragment() {
+class MainFragment : Fragment(), ItemListInteractorListener {
 
     private val mViewModel: MainViewModel by lazy {
         val factory = CustomViewModelFactory(requireActivity().application)
@@ -50,29 +51,32 @@ class MainFragment : Fragment() {
 //        items.add("Title 5")
 //        items.add("Title 6")
 
-        var items = mViewModel.getLocalApods()
-
-        var mainAdapter = MainAdapter(requireContext(), items, object: ItemListInteractorListener {
-            override fun itemClicked(apodResponse: ApodResponse) {
-                val intent = Intent(context, DetailActivity::class.java).apply {
-
-                    arguments = Bundle().apply {
-                        this.putSerializable("localApod", apodResponse)
-                    }
-
-                    arguments?.let {
-                        putExtras(it)
-                    }
-                    putExtra("OriginTag", "local_apod")
-                    startActivity(this)
-                }
-
-            }
+        mViewModel.getLocalApods().observe(viewLifecycleOwner, Observer { items ->
+            mainAdapter = MainAdapter(requireContext(), items, this)
+            recyclerView.adapter = mainAdapter
         })
 
-        recyclerView.adapter = mainAdapter
         recyclerView.layoutManager = LinearLayoutManager(context)
         recyclerView.isNestedScrollingEnabled = false
         recyclerView.setHasFixedSize(false)
+
+    }
+
+
+    override fun itemClicked(apodResponse: ApodResponse) {
+        activity?.let {
+            Intent(it, DetailActivity::class.java).apply {
+
+                arguments = Bundle().apply {
+                    this.putSerializable("localApod", apodResponse)
+                }
+
+                arguments?.let { bro ->
+                    putExtras(bro)
+                }
+                putExtra("OriginTag", "local_apod")
+                startActivity(this)
+            }
+        }
     }
 }
