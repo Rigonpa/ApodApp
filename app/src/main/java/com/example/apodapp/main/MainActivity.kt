@@ -1,10 +1,13 @@
 package com.example.apodapp.main
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import android.view.Menu
 import android.view.MenuItem
 import com.example.apodapp.R
+import com.example.apodapp.detail.DetailActivity
+import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {
 
@@ -20,6 +23,12 @@ class MainActivity : AppCompatActivity() {
         supportFragmentManager.beginTransaction()
             .replace(R.id.mainContainer, mainFragment)
             .commit()
+
+        fab.setOnClickListener {
+            val intent = Intent(this, DetailActivity::class.java).apply {
+                startActivity(this)
+            }
+        }
 
     }
 

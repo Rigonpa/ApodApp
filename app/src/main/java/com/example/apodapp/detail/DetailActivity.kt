@@ -1,12 +1,15 @@
 package com.example.apodapp.detail
 
+import android.graphics.ColorMatrix
+import android.graphics.ColorMatrixColorFilter
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import com.bumptech.glide.Glide
+import com.bumptech.glide.request.RequestOptions
 import com.example.apodapp.R
 import com.example.apodapp.data.model.ApodResponse
-import com.example.apodapp.data.network.ApodService
+import com.example.apodapp.data.remote.ApodService
 import com.example.apodapp.utils.Common
 import com.example.apodapp.utils.CustomViewModelFactory
 import kotlinx.android.synthetic.main.activity_detail.*
@@ -14,8 +17,10 @@ import retrofit2.Response
 
 class DetailActivity : AppCompatActivity() {
 
+    private var mApodResponse: ApodResponse? = null
+
     private val mViewModel: DetailViewModel by lazy {
-        val factory = CustomViewModelFactory()
+        val factory = CustomViewModelFactory(application)
         ViewModelProvider(this, factory).get(DetailViewModel::class.java)
     }
 
@@ -23,14 +28,50 @@ class DetailActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_detail)
 
-        mViewModel.getApod(Common.API_KEY, object: ApodService.ResponseListener<ApodResponse> {
-            override fun onResponse(response: ApodResponse) {
-                detailTextView.text = response.explanation
+        if (intent.getStringExtra("OriginTag") == "local_apod") {
+
+            mApodResponse = intent.getSerializableExtra("localApod") as? ApodResponse
+
+            mApodResponse?.let {
+                detailTextView.text = it.explanation
+
+                Glide.with(this@DetailActivity)
+                    .load(it.url)
+                    .apply(RequestOptions().placeholder(R.drawable.ic_launcher_background))
+                    .into(detailImageView)
             }
 
-            override fun onFailure(t: Throwable, res: Response<*>?) {
-                detailTextView.text = res.toString()
-            }
-        })
+        } else {
+//        } else if(intent.getStringExtra("OriginTag") == "remote_apod") {
+
+            mViewModel.getApod(Common.API_KEY, object : ApodService.ResponseListener<ApodResponse> {
+                override fun onResponse(response: ApodResponse) {
+
+                    mApodResponse = response
+
+                    detailTextView.text = response.explanation
+
+                    Glide.with(this@DetailActivity)
+                        .load(response.url)
+                        .apply(RequestOptions().placeholder(R.drawable.ic_launcher_background))
+                        .into(detailImageView)
+
+                    // Si lo queremos pasar a grises
+//                val colorMatrix = ColorMatrix()
+//                colorMatrix.setSaturation(0f)
+//                val filter = ColorMatrixColorFilter(colorMatrix)
+//                this@DetailActivity.detailImageView.colorFilter = filter
+                }
+
+                override fun onFailure(t: Throwable, res: Response<*>?) {
+                    detailTextView.text = res.toString()
+                }
+            })
+
+        }
+
+        detailSaveApod.setOnClickListener {
+            mViewModel.insertApod(mApodResponse!!)
+        }
     }
 }

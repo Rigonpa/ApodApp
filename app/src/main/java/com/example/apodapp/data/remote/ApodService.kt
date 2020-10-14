@@ -1,4 +1,4 @@
-package com.example.apodapp.data.network
+package com.example.apodapp.data.remote
 
 import retrofit2.Response
 import retrofit2.Retrofit

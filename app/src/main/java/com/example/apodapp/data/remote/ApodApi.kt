@@ -1,4 +1,4 @@
-package com.example.apodapp.data.network
+package com.example.apodapp.data.remote
 
 
 import com.example.apodapp.data.model.ApodResponse
@@ -11,5 +11,5 @@ interface ApodApi {
 
     @GET("planetary/apod")
     @Headers("Content-Type: application/json")
-    fun getApod(@Query("api-key") apiKey: String) : Call<ApodResponse>
+    fun getApod(@Query("api_key") apiKey: String) : Call<ApodResponse>
 }

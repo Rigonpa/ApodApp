@@ -1,11 +1,18 @@
 package com.example.apodapp.data.model
 
 import android.os.Parcelable
+import androidx.room.Entity
+import androidx.room.PrimaryKey
 import com.google.gson.annotations.SerializedName
 import kotlinx.android.parcel.Parcelize
-
-@Parcelize
+import java.io.Serializable
+import java.util.*
+// @Parcelable
+@Entity(tableName = "apod_table")
 data class ApodResponse(
+
+	@PrimaryKey
+	var id: String = UUID.randomUUID().toString(),
 
 	@field:SerializedName("date")
 	val date: String? = null,
@@ -27,4 +34,4 @@ data class ApodResponse(
 
 	@field:SerializedName("url")
 	val url: String? = null
-) : Parcelable
+) : Serializable

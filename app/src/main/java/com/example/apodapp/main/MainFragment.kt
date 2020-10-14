@@ -7,15 +7,23 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.apodapp.R
+import com.example.apodapp.data.model.ApodResponse
 import com.example.apodapp.detail.DetailActivity
+import com.example.apodapp.utils.CustomViewModelFactory
 import kotlinx.android.synthetic.main.fragment_main.*
 
 /**
  * A simple [Fragment] subclass as the default destination in the navigation.
  */
 class MainFragment : Fragment() {
+
+    private val mViewModel: MainViewModel by lazy {
+        val factory = CustomViewModelFactory(requireActivity().application)
+        ViewModelProvider(this, factory).get(MainViewModel::class.java)
+    }
 
     companion object {
         fun getNewInstance () = MainFragment()
@@ -34,19 +42,31 @@ class MainFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        var items = ArrayList<String>()
-        items.add("Title 1")
-        items.add("Title 2")
-        items.add("Title 3")
-        items.add("Title 4")
-        items.add("Title 5")
-        items.add("Title 6")
+//        var items = ArrayList<String>()
+//        items.add("Title 1")
+//        items.add("Title 2")
+//        items.add("Title 3")
+//        items.add("Title 4")
+//        items.add("Title 5")
+//        items.add("Title 6")
+
+        var items = mViewModel.getLocalApods()
 
         var mainAdapter = MainAdapter(requireContext(), items, object: ItemListInteractorListener {
-            override fun itemClicked() {
+            override fun itemClicked(apodResponse: ApodResponse) {
                 val intent = Intent(context, DetailActivity::class.java).apply {
+
+                    arguments = Bundle().apply {
+                        this.putSerializable("localApod", apodResponse)
+                    }
+
+                    arguments?.let {
+                        putExtras(it)
+                    }
+                    putExtra("OriginTag", "local_apod")
                     startActivity(this)
                 }
+
             }
         })
 
