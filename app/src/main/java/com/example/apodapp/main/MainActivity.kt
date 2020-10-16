@@ -30,6 +30,8 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
+        startWorkingManager()
+
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -46,5 +48,9 @@ class MainActivity : AppCompatActivity() {
             R.id.action_settings -> true
             else -> super.onOptionsItemSelected(item)
         }
+    }
+
+    fun startWorkingManager() {
+
     }
 }

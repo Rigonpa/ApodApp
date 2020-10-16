@@ -10,6 +10,10 @@ import retrofit2.Callback
 import retrofit2.Response
 
 class DetailViewModel(private val context: Application): ViewModel() {
+    fun deleteApod(apodResponse: ApodResponse) {
+        ApodRoomDatabase.getInstance(context).apodDao().deleteApod(apodResponse)
+    }
+
     fun getApod(apiKey: String, callback: ApodService.ResponseListener<ApodResponse>) {
         ApodService().apodApi.getApod(apiKey).enqueue(object : Callback<ApodResponse>{
             override fun onResponse(call: Call<ApodResponse>, response: Response<ApodResponse>) {

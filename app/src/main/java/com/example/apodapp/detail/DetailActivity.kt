@@ -19,6 +19,8 @@ class DetailActivity : AppCompatActivity() {
 
     private var mApodResponse: ApodResponse? = null
 
+    var localApod = false
+
     private val mViewModel: DetailViewModel by lazy {
         val factory = CustomViewModelFactory(application)
         ViewModelProvider(this, factory).get(DetailViewModel::class.java)
@@ -28,9 +30,12 @@ class DetailActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_detail)
 
-        if (intent.getStringExtra("OriginTag") == "local_apod") {
+        if (intent.getStringExtra("ORIGIN_TAG") == "local_apod") { // Se ha pinchado en la lista:
+            localApod = true
+//            detailSaveApod.text = "DELETE"
+            detailSaveApod.setImageResource(android.R.drawable.ic_menu_delete)
 
-            mApodResponse = intent.getSerializableExtra("localApod") as? ApodResponse
+            mApodResponse = intent.getSerializableExtra("LOCAL_APOD") as? ApodResponse
 
             mApodResponse?.let {
                 detailTextView.text = it.explanation
@@ -41,7 +46,8 @@ class DetailActivity : AppCompatActivity() {
                     .into(detailImageView)
             }
 
-        } else {
+        } else { // Se ha pinchado en la lupa:
+
 //        } else if(intent.getStringExtra("OriginTag") == "remote_apod") {
 
             mViewModel.getApod(Common.API_KEY, object : ApodService.ResponseListener<ApodResponse> {
@@ -71,7 +77,11 @@ class DetailActivity : AppCompatActivity() {
         }
 
         detailSaveApod.setOnClickListener {
-            mViewModel.insertApod(mApodResponse!!)
+            if (localApod) { // El elemento ya estaba guardado y queremos eliminarlo de la lista
+                mViewModel.deleteApod(mApodResponse!!)
+            } else { // Imagen del día queremos añadirla a nuestra base de datos
+                mViewModel.insertApod(mApodResponse!!)
+            }
             finish()
         }
     }

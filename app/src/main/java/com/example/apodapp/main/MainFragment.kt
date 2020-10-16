@@ -68,13 +68,13 @@ class MainFragment : Fragment(), ItemListInteractorListener {
             Intent(it, DetailActivity::class.java).apply {
 
                 arguments = Bundle().apply {
-                    this.putSerializable("localApod", apodResponse)
+                    this.putSerializable("LOCAL_APOD", apodResponse)
                 }
 
                 arguments?.let { bro ->
                     putExtras(bro)
                 }
-                putExtra("OriginTag", "local_apod")
+                putExtra("ORIGIN_TAG", "local_apod")
                 startActivity(this)
             }
         }
