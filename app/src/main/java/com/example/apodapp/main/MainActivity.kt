@@ -5,9 +5,12 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import android.view.Menu
 import android.view.MenuItem
+import androidx.work.*
 import com.example.apodapp.R
 import com.example.apodapp.detail.DetailActivity
+import com.example.apodapp.works.ApodWorker
 import kotlinx.android.synthetic.main.activity_main.*
+import java.util.concurrent.TimeUnit
 
 class MainActivity : AppCompatActivity() {
 
@@ -30,7 +33,7 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        startWorkingManager()
+        startWorkManager()
 
     }
 
@@ -50,7 +53,16 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    fun startWorkingManager() {
+    fun startWorkManager() {
+        val constraints = Constraints.Builder()
+            .setRequiredNetworkType(NetworkType.CONNECTED)
+            .build()
 
+        val apodWorker = PeriodicWorkRequest.Builder(
+            ApodWorker::class.java, 1, TimeUnit.DAYS)
+            .setConstraints(constraints)
+            .build()
+
+        WorkManager.getInstance(this).enqueue(apodWorker)
     }
 }
